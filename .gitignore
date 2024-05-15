@@ -1,1 +1,6 @@
 build/
+
+mnist_data/test_images.csv
+mnist_data/test_labels.csv
+mnist_data/train_images.csv
+mnist_data/train_labels.csv
