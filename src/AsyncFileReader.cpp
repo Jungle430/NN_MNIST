@@ -73,10 +73,10 @@ auto AsyncFileReader::readFile() -> void {
     return stop_flag || buffer.size() >= batch_size;
   });
   // read buffer data
-  auto ans = std::vector<std::string>();
   std::size_t read_count = std::min(batch_size, buffer.size());
+  auto ans = std::vector<std::string>(read_count);
   for (std::size_t i = 0; i < read_count; i++) {
-    ans.emplace_back(buffer.front());
+    ans[i] = buffer.front();
     buffer.pop();
   }
   // notify the read_thread

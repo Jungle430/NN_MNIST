@@ -39,9 +39,19 @@ class AsyncFileReader {
  public:
   AsyncFileReader() = delete;
 
+  /**
+   * @param file_name read file name
+   * @param batch_size every read size
+   * @param max_buffer_size the buffer to save file data max size, if it <=
+   * batch_size, it will be batch_size
+   */
   explicit AsyncFileReader(std::string &&file_name, std::size_t batch_size,
                            std::size_t max_buffer_size) noexcept;
-
+  /**
+   * @brief async read the file data
+   * @return if has been finished reading file, return null
+   * @return else return the batch size file data
+   */
   [[nodiscard]] auto getLines() -> std::optional<std::vector<std::string>>;
 
   ~AsyncFileReader();

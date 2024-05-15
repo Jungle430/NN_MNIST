@@ -15,6 +15,7 @@ auto main() -> int {
     for (const std::string &s : read_data.value()) {
       std::cout << s << std::endl;
     }
+    std::cout << std::endl;
   }
   return 0;
 }
