@@ -1,19 +1,20 @@
 #include <iostream>
 
 #include "include/AsyncFileReader.h"
+#include "include/config.h"
 
 auto main() -> int {
-  AsyncFileReader fileReader("../test.txt");
+  AsyncFileReader reader("../test.txt", CNN::DEFAULT_BATCH_SIZE,
+                         CNN::DEFAULT_BUFFER_MAX_SIZE);
 
   while (true) {
-    auto lines = fileReader.getLines(5);
-    if (lines.empty()) {
+    std::optional<std::vector<std::string>> read_data = reader.getLines();
+    if (!read_data) {
       break;
     }
-    for (const auto &line : lines) {
-      std::cout << line << std::endl;
+    for (const std::string &s : read_data.value()) {
+      std::cout << s << std::endl;
     }
   }
-
   return 0;
 }

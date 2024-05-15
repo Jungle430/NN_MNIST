@@ -1,32 +1,48 @@
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <string>
 #include <thread>
 
 class AsyncFileReader {
  private:
-  constexpr static std::size_t READ_SLEEP_INTERVAL_TIME = 1;
-
+  // The file name
   std::string file_name;
 
+  // work thread to async read the file
   std::thread worker_thread;
 
+  // lock to protect the file data
   std::mutex mu;
 
-  std::queue<std::string> lines_queue;
+  // buffer to save the file data
+  //                             buffer
+  // other thread: read <- [data1,data2,....] <- worker thread
+  std::queue<std::string> buffer;  //<----------------------------|
+  //                                                              |
+  // max buffer size ---------------------------------------------|
+  std::size_t max_buffer_size;
 
-  std::condition_variable cv;
+  // condition value
+  std::condition_variable cv;  //
 
+  // flag to express if the file has been finished reading
   bool stop_flag;
+
+  // the size that every read
+  std::size_t batch_size;
 
   auto readFile() -> void;
 
  public:
-  explicit AsyncFileReader(std::string &&file_name);
+  AsyncFileReader() = delete;
 
-  auto getLines(std::size_t num_lines) -> std::vector<std::string>;
+  explicit AsyncFileReader(std::string &&file_name, std::size_t batch_size,
+                           std::size_t max_buffer_size) noexcept;
+
+  [[nodiscard]] auto getLines() -> std::optional<std::vector<std::string>>;
 
   ~AsyncFileReader();
 };
