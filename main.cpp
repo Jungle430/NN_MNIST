@@ -1,20 +1,25 @@
-#include <iostream>
-
 #include "include/AsyncFileReader.h"
+#include "include/DataMatrix.hpp"
+#include "include/NeuralNetworkLayer.hpp"
+#include "include/ReLU.hpp"
+#include "include/Sigmoid.hpp"
 #include "include/config.h"
 
 auto main() -> int {
-  AsyncFileReader reader("../mnist_data/train_images.csv",
-                         CNN::DEFAULT_BATCH_SIZE, CNN::DEFAULT_BUFFER_MAX_SIZE);
+  AsyncFileReader async_reader = AsyncFileReader(
+      MNIST::TRAIN_IMAGES, NN::DEFAULT_BATCH_SIZE, NN::DEFAULT_BUFFER_MAX_SIZE);
+  auto read = async_reader.getLines();
+  DataMatrix<double> dm(read.value()[0]);
+  NeuralNetworkLayer<double> nn(16, true, &dm, true, nullptr);
 
-  while (true) {
-    std::optional<std::vector<std::string>> read_data = reader.getLines();
-    if (!read_data) {
-      break;
-    }
-    for (const std::string &s : read_data.value()) {
-      std::cout << s << std::endl;
-    }
+  RandomFloatGenerate<double> rm(NN::RANDOM_PARAM_MIN, NN::RANDOM_PARAM_MAX);
+
+  for (std::size_t i = 0; i < 10; i++) {
+    double num = rm();
+    auto relu = NN::ActivationFunction::ReLU<double>();
+    auto sigmoid = NN::ActivationFunction::Sigmoid<double>();
+    std::cout << num << " " << relu(num) << " " << sigmoid(num) << std::endl;
   }
+
   return 0;
 }

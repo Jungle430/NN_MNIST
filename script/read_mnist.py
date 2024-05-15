@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import idx2numpy
 import threading
+from loguru import logger
 from typing import List
 
 
@@ -47,7 +48,8 @@ test_images: np.ndarray = idx2numpy.convert_from_file(test_images_path)
 test_labels: np.ndarray = idx2numpy.convert_from_file(test_labels_path)
 
 if __name__ == "__main__":
-    os.system("rm -rf *.csv")
+    logger.info("delete the old data")
+    os.system("rm -rf ../mnist_data/*.csv")
 
     if len(sys.argv) != 3:
         print(command_message)
@@ -87,8 +89,10 @@ if __name__ == "__main__":
         )
     )
 
+    logger.info("begin handle dataSet")
     for work in works:
         work.start()
 
     for work in works:
         work.join()
+    logger.info("finish handle dataSet")

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <condition_variable>
 #include <cstddef>
 #include <mutex>
@@ -6,6 +8,9 @@
 #include <string>
 #include <thread>
 
+/**
+  @brief Async read file, solve the OOM problem
+*/
 class AsyncFileReader {
  private:
   // The file name
