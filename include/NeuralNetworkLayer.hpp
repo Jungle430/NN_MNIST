@@ -1,33 +1,32 @@
 #pragma once
 
 #include <algorithm>
-#include <array>
-#include <cstddef>
-#include <iterator>
-#include <stdexcept>
 #include <type_traits>
 
 #include "DataMatrix.hpp"
-#include "NNActivationFunction.h"
+#include "NNActivationFunction.hpp"
 #include "RandomFloatGenerate.hpp"
+#include "ReLU.hpp"
+#include "Sigmoid.hpp"
 #include "config.h"
 
-template <typename dtype = double,
-          typename ActivationFunction = NN::ActivationFunction::Sigmoid<dtype>>
+template <typename dtype = double>
 class NeuralNetworkLayer {
-  static_assert(
-      NN::ActivationFunction::is_ActivationFunction<ActivationFunction>::value,
-      "Function must be network activation function.");
-
   static_assert(std::is_floating_point<dtype>::value,
                 "dtype must be a floating point type.");
 
  private:
+  constexpr static NN::ActivationFunction::ReLU<dtype> relu =
+      NN::ActivationFunction::ReLU<dtype>();
+
+  constexpr static NN::ActivationFunction::Sigmoid<dtype> sigmoid =
+      NN::ActivationFunction::Sigmoid<dtype>();
+
   DataMatrix<dtype> *data_layer;
 
-  NeuralNetworkLayer<dtype, ActivationFunction> *prev_layer;
+  NeuralNetworkLayer<dtype> *prev_layer;
 
-  NeuralNetworkLayer<dtype, ActivationFunction> *next_layer;
+  NeuralNetworkLayer<dtype> *next_layer;
 
   std::vector<dtype> data;
 
@@ -35,19 +34,23 @@ class NeuralNetworkLayer {
 
   std::vector<dtype> b;
 
-  const ActivationFunction activation_function;
+  NN::ActivationFunction::BaseActivationFunction<dtype> const
+      *activation_function;
 
  public:
   NeuralNetworkLayer() = default;
 
   NeuralNetworkLayer(std::size_t n, DataMatrix<dtype> *data_layer,
-                     NeuralNetworkLayer<dtype, ActivationFunction> *prev_layer,
-                     NeuralNetworkLayer<dtype, ActivationFunction> *next_layer,
-                     ActivationFunction activation_function) noexcept
-      : data_layer(data_layer),
-        prev_layer(prev_layer),
-        next_layer(next_layer),
-        activation_function(activation_function) {
+                     NeuralNetworkLayer<dtype> *prev_layer,
+                     NeuralNetworkLayer<dtype> *next_layer,
+                     const std::string &activation_function_type) noexcept
+      : data_layer(data_layer), prev_layer(prev_layer), next_layer(next_layer) {
+    if (activation_function_type == "ReLU") {
+      activation_function = &NeuralNetworkLayer<dtype>::relu;
+    } else {
+      activation_function = &NeuralNetworkLayer<dtype>::sigmoid;
+    }
+
     data = std::vector<dtype>(n, 0.0);
     std::size_t last_layer_domain;
     if (data_layer != nullptr) {
@@ -85,7 +88,7 @@ class NeuralNetworkLayer {
         for (std::size_t j = 0; j < w[i].size(); j++) {
           s += w[i][j] * ((*data_layer)[j]);
         }
-        data[i] = activation_function(s + b[i]);
+        data[i] = activation_function->apply(s + b[i], true);
       }
     } else {
       for (std::size_t i = 0; i < data.size(); i++) {
@@ -93,7 +96,7 @@ class NeuralNetworkLayer {
         for (std::size_t j = 0; j < w[i].size(); j++) {
           s += w[i][j] * ((*prev_layer)[j]);
         }
-        data[i] = activation_function(s + b[i]);
+        data[i] = activation_function->apply(s + b[i], true);
       }
     }
     if (next_layer != nullptr) {
@@ -114,15 +117,11 @@ class NeuralNetworkLayer {
     this->data_layer = data_layer;
   }
 
-  auto setPrevLayer(
-      NeuralNetworkLayer<dtype, ActivationFunction> *prev_layer) noexcept
-      -> void {
+  auto setPrevLayer(NeuralNetworkLayer<dtype> *prev_layer) noexcept -> void {
     this->prev_layer = prev_layer;
   }
 
-  auto setNextLayer(
-      NeuralNetworkLayer<dtype, ActivationFunction> *next_layer) noexcept
-      -> void {
+  auto setNextLayer(NeuralNetworkLayer<dtype> *next_layer) noexcept -> void {
     this->next_layer = next_layer;
   }
 };

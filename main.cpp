@@ -1,7 +1,11 @@
+#include <memory>
+
 #include "include/AsyncFileReader.h"
 #include "include/DataMatrix.hpp"
-#include "include/NNActivationFunction.h"
+#include "include/NNActivationFunction.hpp"
 #include "include/NeuralNetworkLayer.hpp"
+#include "include/ReLU.hpp"
+#include "include/Sigmoid.hpp"
 #include "include/config.h"
 
 auto main() -> int {
@@ -18,20 +22,17 @@ auto main() -> int {
       break;
     }
     DataMatrix<double> dm(train_set_read.value()[0]);
-    NeuralNetworkLayer<double, NN::ActivationFunction::ReLU<double>> nn1(
-        NN::DEFAULT_NODE_SIZE, &dm, nullptr, nullptr,
-        NN::ActivationFunction::ReLU<double>());
-    NeuralNetworkLayer<double, NN::ActivationFunction::ReLU<double>> nn2(
-        NN::DEFAULT_NODE_SIZE, nullptr, &nn1, nullptr,
-        NN::ActivationFunction::ReLU<double>());
-    NeuralNetworkLayer<double, NN::ActivationFunction::ReLU<double>> nn3(
-        MNIST::NUMBER_SIZE, nullptr, &nn2, nullptr,
-        NN::ActivationFunction::ReLU<double>());
+    NeuralNetworkLayer<double> nn1(NN::DEFAULT_NODE_SIZE, &dm, nullptr, nullptr,
+                                   "ReLU");
+    NeuralNetworkLayer<double> nn2(NN::DEFAULT_NODE_SIZE, nullptr, &nn1,
+                                   nullptr, "ReLU");
+    NeuralNetworkLayer<double> nn3(MNIST::NUMBER_SIZE, nullptr, &nn2, nullptr,
+                                   "ReLU");
+    nn1.setNextLayer(&nn2);
+    nn2.setNextLayer(&nn3);
     for (std::size_t i = 0; i < train_set_read.value().size(); i++) {
       dm = DataMatrix<double>(train_set_read.value()[i]);
       nn1.setDataLayer(&dm);
-      nn1.setNextLayer(&nn2);
-      nn2.setNextLayer(&nn3);
       nn1.forward();
       std::cout << nn3.forecast() << " " << train_label_read.value()[i]
                 << std::endl;
