@@ -54,7 +54,7 @@ class NeuralNetworkLayer {
      *  static
      |    ReLU   | <-----------------------------
      ------------                               |
-     |  Sigmoid  |  activation_function_type ----
+     |  Sigmoid  |  activation_function ---------
      */
     if (activation_function_type == "ReLU") {
       activation_function = &NeuralNetworkLayer<dtype>::relu;
@@ -62,7 +62,7 @@ class NeuralNetworkLayer {
       /**
        * @brief
      *  static
-     |    ReLU   | activation_function_type -----
+     |    ReLU   | activation_function ----------
      ------------                               |
      |  Sigmoid  | <-----------------------------
      */
@@ -127,7 +127,7 @@ class NeuralNetworkLayer {
       for (std::size_t i = 0; i < data.size(); i++) {
         // update b
         // dloss/dy_hat = y_hat - y
-        dtype d_loss = data[i] - labels[i];
+        dtype d_loss_d_y_hat = data[i] - labels[i];
         // y_hat = f(w+b) => w1*a1+w2*a2...
         // dy_hat/db = f'(k+b)
         dtype w_and_b = 0.0;
@@ -142,7 +142,7 @@ class NeuralNetworkLayer {
         }
         w_and_b += b[i];
         dtype dy_hat_db = activation_function->apply(w_and_b, false);
-        b[i] -= alpha * d_loss * dy_hat_db;
+        b[i] -= alpha * d_loss_d_y_hat * dy_hat_db;
 
         for (std::size_t j = 0; j < w[i].size(); j++) {
           // update [w1,w2...,wn]
@@ -152,7 +152,7 @@ class NeuralNetworkLayer {
           dtype dy_hat_dw = (data_layer != nullptr ? ((*data_layer)[j])
                                                    : ((*prev_layer)[j])) *
                             activation_function->apply(w_and_b, false);
-          w[i][j] -= alpha * d_loss * dy_hat_dw;
+          w[i][j] -= alpha * d_loss_d_y_hat * dy_hat_dw;
         }
       }
     }
