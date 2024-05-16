@@ -12,13 +12,15 @@ constexpr const char* TEST_IMAGES = "../mnist_data/test_images.csv";
 constexpr const char* TEST_LABELS = "../mnist_data/test_labels.csv";
 
 constexpr const std::size_t NUMBER_SIZE = 10;
+
+constexpr const std::size_t DOMAIN = 28 * 28;
 }  // namespace MNIST
 
 // param for CNN
 namespace CNN {
 constexpr std::size_t DEFAULT_BATCH_SIZE = 1000;
 
-constexpr std::size_t DEFAULT_BUFFER_MAX_SIZE = 2000;
+constexpr std::size_t DEFAULT_BUFFER_MAX_SIZE = 1500;
 }  // namespace CNN
 
 // param for NN

@@ -22,6 +22,10 @@ class NeuralNetworkLayer {
   constexpr static NN::ActivationFunction::Sigmoid<dtype> sigmoid =
       NN::ActivationFunction::Sigmoid<dtype>();
 
+  constexpr static dtype DEFAULT_ALPHA = 0.01;
+
+  dtype alpha = DEFAULT_ALPHA;
+
   DataMatrix<dtype> *data_layer;
 
   NeuralNetworkLayer<dtype> *prev_layer;
@@ -45,9 +49,23 @@ class NeuralNetworkLayer {
                      NeuralNetworkLayer<dtype> *next_layer,
                      const std::string &activation_function_type) noexcept
       : data_layer(data_layer), prev_layer(prev_layer), next_layer(next_layer) {
+    /**
+     * @brief
+     *  static
+     |    ReLU   | <-----------------------------
+     ------------                               |
+     |  Sigmoid  |  activation_function_type ----
+     */
     if (activation_function_type == "ReLU") {
       activation_function = &NeuralNetworkLayer<dtype>::relu;
     } else {
+      /**
+       * @brief
+     *  static
+     |    ReLU   | activation_function_type -----
+     ------------                               |
+     |  Sigmoid  | <-----------------------------
+     */
       activation_function = &NeuralNetworkLayer<dtype>::sigmoid;
     }
 
@@ -104,6 +122,42 @@ class NeuralNetworkLayer {
     }
   }
 
+  auto backward(const std::vector<dtype> &labels) -> void {
+    if (next_layer == nullptr) {
+      for (std::size_t i = 0; i < data.size(); i++) {
+        // update b
+        // dloss/dy_hat = y_hat - y
+        dtype d_loss = data[i] - labels[i];
+        // y_hat = f(w+b) => w1*a1+w2*a2...
+        // dy_hat/db = f'(k+b)
+        dtype w_and_b = 0.0;
+        if (data_layer != nullptr) {
+          for (std::size_t j = 0; j < w[i].size(); j++) {
+            w_and_b += w[i][j] * ((*data_layer)[j]);
+          }
+        } else {
+          for (std::size_t j = 0; j < w[i].size(); j++) {
+            w_and_b += w[i][j] * ((*prev_layer)[j]);
+          }
+        }
+        w_and_b += b[i];
+        dtype dy_hat_db = activation_function->apply(w_and_b, false);
+        b[i] -= alpha * d_loss * dy_hat_db;
+
+        for (std::size_t j = 0; j < w[i].size(); j++) {
+          // update [w1,w2...,wn]
+          // y_hat = f(w1 * a1 + w2 * a2 + ...)
+          // dy_hat/dw = a1 * f'
+          // a1 = image[i] or prev_layer[i]
+          dtype dy_hat_dw = (data_layer != nullptr ? ((*data_layer)[j])
+                                                   : ((*prev_layer)[j])) *
+                            activation_function->apply(w_and_b, false);
+          w[i][j] -= alpha * d_loss * dy_hat_dw;
+        }
+      }
+    }
+  }
+
   [[nodiscard]] auto isOutput() const noexcept -> bool {
     return next_layer == nullptr;
   }
@@ -113,8 +167,9 @@ class NeuralNetworkLayer {
                          std::max_element(data.cbegin(), data.cend()));
   }
 
-  [[nodiscard]] auto forecastData() const noexcept -> std::vector<dtype> {
-    return std::vector<dtype>(data);
+  [[nodiscard]] auto forecastData() const noexcept
+      -> const std::vector<dtype> & {
+    return data;
   }
 
   auto setDataLayer(DataMatrix<dtype> *data_layer) noexcept -> void {
@@ -128,4 +183,6 @@ class NeuralNetworkLayer {
   auto setNextLayer(NeuralNetworkLayer<dtype> *next_layer) noexcept -> void {
     this->next_layer = next_layer;
   }
+
+  auto setAlpha(dtype alpha) noexcept -> void { this->alpha = alpha; }
 };

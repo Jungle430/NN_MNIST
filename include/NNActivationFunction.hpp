@@ -10,6 +10,9 @@ class BaseActivationFunction {
                 "dtype must be a floating point type.");
 
  public:
+  /**
+   * @throw if it's not override, it will throw `std::logic_error`
+   */
   virtual auto apply(dtype /*unused*/, bool /*unused*/) const noexcept(false)
       -> dtype {
     throw std::logic_error("is the virtual function");

@@ -20,7 +20,7 @@ class AsyncFileReader {
   std::thread worker_thread;
 
   // lock to protect the file data
-  std::mutex mu;
+  mutable std::mutex mu;
 
   // buffer to save the file data
   //                             buffer

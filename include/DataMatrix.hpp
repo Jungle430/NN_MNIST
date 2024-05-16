@@ -25,7 +25,7 @@ class DataMatrix {
   explicit DataMatrix(const std::string &data_value,
                       std::size_t init_cap = DEFAULT_INIT_CAP)
       : data(std::vector<dtype>()) {
-    data.resize(init_cap);
+    data.reserve(init_cap);
 
     std::stringstream ss(data_value);
     std::string token;
@@ -34,6 +34,13 @@ class DataMatrix {
       pixelValue /= IMAGE_VALUE_MAX;
       data.emplace_back(pixelValue);
     }
+  }
+
+  explicit DataMatrix(std::size_t size,
+                      std::size_t init_cap = DEFAULT_INIT_CAP) noexcept
+      : data(std::vector<dtype>()) {
+    data.reserve(std::max(size, init_cap));
+    data.resize(size);
   }
 
   auto operator[](std::size_t i) -> dtype & { return data[i]; }
