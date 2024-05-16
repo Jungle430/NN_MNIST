@@ -113,6 +113,10 @@ class NeuralNetworkLayer {
                          std::max_element(data.cbegin(), data.cend()));
   }
 
+  [[nodiscard]] auto forecastData() const noexcept -> std::vector<dtype> {
+    return std::vector<dtype>(data);
+  }
+
   auto setDataLayer(DataMatrix<dtype> *data_layer) noexcept -> void {
     this->data_layer = data_layer;
   }

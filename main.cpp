@@ -27,15 +27,19 @@ auto main() -> int {
     NeuralNetworkLayer<double> nn2(NN::DEFAULT_NODE_SIZE, nullptr, &nn1,
                                    nullptr, "ReLU");
     NeuralNetworkLayer<double> nn3(MNIST::NUMBER_SIZE, nullptr, &nn2, nullptr,
-                                   "ReLU");
+                                   "Sigmoid");
     nn1.setNextLayer(&nn2);
     nn2.setNextLayer(&nn3);
     for (std::size_t i = 0; i < train_set_read.value().size(); i++) {
       dm = DataMatrix<double>(train_set_read.value()[i]);
       nn1.setDataLayer(&dm);
       nn1.forward();
-      std::cout << nn3.forecast() << " " << train_label_read.value()[i]
-                << std::endl;
+
+      for (const auto &n : nn3.forecastData()) {
+        std::cout << n << " ";
+      }
+      std::cout << std::endl;
+
       if (nn3.forecast() ==
           static_cast<std::size_t>(train_label_read.value()[i][0] - '0')) {
         right++;
