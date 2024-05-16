@@ -45,7 +45,7 @@ auto main() -> int {
         for (std::size_t k = 0; k < real_data.size(); k++) {
           // std::cout << nn2[k] << " ";
 
-          loss += nn2[k] - real_data[k];
+          loss += (nn2[k] - real_data[k]) * (nn2[k] - real_data[k]);
         }
 
         // std::cout << nn2.forecast() << " " << real_num << std::endl;
@@ -121,7 +121,7 @@ auto main() -> int {
             if (i == 9) {
               std::cout << nn2[k] << " ";
             }
-            loss += nn2[k] - real_data[k];
+            loss += (nn2[k] - real_data[k]) * (nn2[k] - real_data[k]);
           }
           if (i == 9) {
             std::cout << nn2.forecast() << " " << real_num << std::endl;

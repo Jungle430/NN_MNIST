@@ -17,10 +17,13 @@ class NeuralNetworkLayer {
 
  private:
   constexpr static NN::ActivationFunction::ReLU<dtype> relu =
-      NN::ActivationFunction::ReLU<dtype>();
-
-  constexpr static NN::ActivationFunction::Sigmoid<dtype> sigmoid =
-      NN::ActivationFunction::Sigmoid<dtype>();
+      NN::ActivationFunction::ReLU<dtype>();  //<-----------------------
+  //                                                                   |
+  constexpr static NN::ActivationFunction::Sigmoid<dtype> sigmoid =  //|
+      NN::ActivationFunction::Sigmoid<dtype>();  //<--------------------
+  //                                                                   |
+  NN::ActivationFunction::BaseActivationFunction<dtype> const  //      |
+      *activation_function;  //----------------------------------------|
 
   constexpr static dtype DEFAULT_ALPHA = 0.01;
 
@@ -37,9 +40,6 @@ class NeuralNetworkLayer {
   std::vector<std::vector<dtype>> w;
 
   std::vector<dtype> b;
-
-  NN::ActivationFunction::BaseActivationFunction<dtype> const
-      *activation_function;
 
  public:
   NeuralNetworkLayer() = default;
