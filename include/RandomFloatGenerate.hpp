@@ -4,15 +4,15 @@
 #include <stdexcept>
 #include <type_traits>
 
-template <typename dtype>
+template <typename dtype = double>
 class RandomFloatGenerate {
+  static_assert(std::is_floating_point<dtype>::value,
+                "dtype must be a floating point type.");
+
  private:
   dtype min_;
 
   dtype max_;
-
-  static_assert(std::is_floating_point<dtype>::value,
-                "dtype must be a floating point type.");
 
   std::random_device rd;
 
@@ -21,6 +21,9 @@ class RandomFloatGenerate {
   std::uniform_real_distribution<dtype> custom_dis;
 
  public:
+  /**
+   * @throw if min > max, throw `std::invalid_argument`
+   */
   RandomFloatGenerate(dtype min, dtype max) : rd(), gen(rd()) {
     if (min > max) {
       throw std::invalid_argument(

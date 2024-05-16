@@ -7,12 +7,12 @@
 #include <type_traits>
 #include <vector>
 
-template <typename dtype>
+template <typename dtype = double>
 class DataMatrix {
- private:
   static_assert(std::is_floating_point<dtype>::value,
                 "dtype must be a floating point type.");
 
+ private:
   constexpr static dtype IMAGE_VALUE_MAX = 255.0;
 
   constexpr static std::size_t DEFAULT_INIT_CAP = 100;
@@ -35,6 +35,8 @@ class DataMatrix {
       data.emplace_back(pixelValue);
     }
   }
+
+  auto operator[](std::size_t i) -> dtype & { return data[i]; }
 
   [[nodiscard]] auto size() const noexcept -> std::size_t {
     return data.size();

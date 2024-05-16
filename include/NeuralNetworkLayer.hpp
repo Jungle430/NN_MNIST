@@ -1,25 +1,33 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
+#include <iterator>
 #include <stdexcept>
 #include <type_traits>
 
 #include "DataMatrix.hpp"
+#include "NNActivationFunction.h"
 #include "RandomFloatGenerate.hpp"
 #include "config.h"
 
-template <typename dtype>
+template <typename dtype = double,
+          typename ActivationFunction = NN::ActivationFunction::Sigmoid<dtype>>
 class NeuralNetworkLayer {
- private:
+  static_assert(
+      NN::ActivationFunction::is_ActivationFunction<ActivationFunction>::value,
+      "Function must be network activation function.");
+
   static_assert(std::is_floating_point<dtype>::value,
                 "dtype must be a floating point type.");
 
-  bool is_data_layer_next;
+ private:
+  DataMatrix<dtype> *data_layer;
 
-  DataMatrix<dtype> const *data_layer;
+  NeuralNetworkLayer<dtype, ActivationFunction> *prev_layer;
 
-  bool is_last;
+  NeuralNetworkLayer<dtype, ActivationFunction> *next_layer;
 
   std::vector<dtype> data;
 
@@ -27,29 +35,25 @@ class NeuralNetworkLayer {
 
   std::vector<dtype> b;
 
-  NeuralNetworkLayer<dtype> const *front_layer;
+  const ActivationFunction activation_function;
 
  public:
   NeuralNetworkLayer() = default;
 
-  NeuralNetworkLayer(std::size_t n, bool is_last, DataMatrix<dtype> *data_layer,
-                     bool is_data_layer_next,
-                     NeuralNetworkLayer<dtype> *front_layer)
-      : is_data_layer_next(is_data_layer_next),
-        data_layer(data_layer),
-        is_last(is_last),
-        front_layer(front_layer) {
-    if ((is_data_layer_next && data_layer == nullptr) ||
-        (!is_data_layer_next && front_layer == nullptr)) {
-      throw std::invalid_argument("front layer can't be null");
-    }
-
+  NeuralNetworkLayer(std::size_t n, DataMatrix<dtype> *data_layer,
+                     NeuralNetworkLayer<dtype, ActivationFunction> *prev_layer,
+                     NeuralNetworkLayer<dtype, ActivationFunction> *next_layer,
+                     ActivationFunction activation_function) noexcept
+      : data_layer(data_layer),
+        prev_layer(prev_layer),
+        next_layer(next_layer),
+        activation_function(activation_function) {
     data = std::vector<dtype>(n, 0.0);
     std::size_t last_layer_domain;
-    if (is_data_layer_next) {
+    if (data_layer != nullptr) {
       last_layer_domain = data_layer->size();
     } else {
-      last_layer_domain = front_layer->size();
+      last_layer_domain = prev_layer->size();
     }
 
     RandomFloatGenerate<dtype> randomFloatGenerate(
@@ -70,5 +74,55 @@ class NeuralNetworkLayer {
 
   [[nodiscard]] auto size() const noexcept -> std::size_t {
     return data.size();
+  }
+
+  auto operator[](std::size_t i) -> dtype & { return data[i]; }
+
+  auto forward() -> void {
+    if (data_layer != nullptr) {
+      for (std::size_t i = 0; i < data.size(); i++) {
+        dtype s = 0.0;
+        for (std::size_t j = 0; j < w[i].size(); j++) {
+          s += w[i][j] * ((*data_layer)[j]);
+        }
+        data[i] = activation_function(s + b[i]);
+      }
+    } else {
+      for (std::size_t i = 0; i < data.size(); i++) {
+        dtype s = 0.0;
+        for (std::size_t j = 0; j < w[i].size(); j++) {
+          s += w[i][j] * ((*prev_layer)[j]);
+        }
+        data[i] = activation_function(s + b[i]);
+      }
+    }
+    if (next_layer != nullptr) {
+      next_layer->forward();
+    }
+  }
+
+  [[nodiscard]] auto isOutput() const noexcept -> bool {
+    return next_layer == nullptr;
+  }
+
+  [[nodiscard]] auto forecast() const noexcept -> std::size_t {
+    return std::distance(data.cbegin(),
+                         std::max_element(data.cbegin(), data.cend()));
+  }
+
+  auto setDataLayer(DataMatrix<dtype> *data_layer) noexcept -> void {
+    this->data_layer = data_layer;
+  }
+
+  auto setPrevLayer(
+      NeuralNetworkLayer<dtype, ActivationFunction> *prev_layer) noexcept
+      -> void {
+    this->prev_layer = prev_layer;
+  }
+
+  auto setNextLayer(
+      NeuralNetworkLayer<dtype, ActivationFunction> *next_layer) noexcept
+      -> void {
+    this->next_layer = next_layer;
   }
 };
