@@ -1,4 +1,4 @@
-# CNN(Convolutional Neural Network) MNIST
+# NN | CNN(Convolutional Neural Network) MNIST
 
 ![C++](https://img.shields.io/badge/NN-C++-informational?style=flat-square&logo=cplusplus&logoColor=white&color=2bbc8a)
 
