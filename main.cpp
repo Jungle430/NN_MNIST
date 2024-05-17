@@ -7,7 +7,7 @@
 
 auto main() -> int {
   NeuralNetwork<long double, 4> neural_network(
-      MNIST::DOMAIN, {{NN::DEFAULT_NODE_SIZE, "Sigmoid"},
+      MNIST::IMAGE_DOMAIN, {{NN::DEFAULT_NODE_SIZE, "Sigmoid"},
                       {NN::DEFAULT_NODE_SIZE, "Sigmoid"},
                       {NN::DEFAULT_NODE_SIZE, "Sigmoid"},
                       {MNIST::NUMBER_SIZE, "Sigmoid"}});
