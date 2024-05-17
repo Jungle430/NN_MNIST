@@ -2,6 +2,7 @@
 
 #include "AsyncFileReader.h"
 #include "NeuralNetwork.hpp"
+#include "spdlog/spdlog.h"
 
 namespace MNIST {
 template <typename dtype = double, std::size_t N = 2>
@@ -53,9 +54,9 @@ auto testNeuralNetwork(NeuralNetwork<dtype, N> &neural_network) -> void {
       count++;
     }
   }
-  std::cout << "test" << std::endl;
-  std::cout << "loss: " << loss << std::endl;
-  std::cout << "right/count:" << right / count << std::endl;
+  spdlog::info("test");
+  spdlog::info("loss: {:f}", loss);
+  spdlog::info("right/count: {:f}", right / count);
 }
 
 template <typename dtype = double, std::size_t N = 2>
