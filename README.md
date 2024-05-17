@@ -16,7 +16,8 @@ git submodule update
 
 - prepare the data
 
-```python3
+```shell
+cd script
 python3 read_mnist.py <train_data_set_size(0~60000)> <test_data_set_size(0~10000)>
 ```
 
