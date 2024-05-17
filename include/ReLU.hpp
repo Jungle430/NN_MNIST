@@ -13,8 +13,13 @@ class ReLU : public BaseActivationFunction<dtype> {
 
   [[nodiscard]] auto apply(dtype x, bool differential) const noexcept
       -> dtype override {
-    return differential ? std::max(static_cast<dtype>(0.0), x)
-                        : (x >= 0 ? 1 : 0);
+    return differential ? (x >= 0 ? 1 : 0)
+                        : std::max(static_cast<dtype>(0.0), x);
   };
+
+  [[nodiscard]] auto differentialByCurrentValue(
+      dtype current_value) const noexcept -> dtype override{
+    return current_value >= 0 ? 1 : 0;
+  }
 };
 }  // namespace NN::ActivationFunction

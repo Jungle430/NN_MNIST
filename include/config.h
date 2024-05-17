@@ -14,6 +14,8 @@ constexpr const char* TEST_LABELS = "../mnist_data/test_labels.csv";
 constexpr const std::size_t NUMBER_SIZE = 10;
 
 constexpr const std::size_t DOMAIN = 28 * 28;
+
+constexpr const std::size_t DEFAULT_TRAIN_COUNT = 10;
 }  // namespace MNIST
 
 // param for CNN
@@ -33,5 +35,5 @@ constexpr double RANDOM_PARAM_MIN = -1.0;
 
 constexpr double RANDOM_PARAM_MAX = 1.0;
 
-constexpr std::size_t DEFAULT_NODE_SIZE = 50;
+constexpr std::size_t DEFAULT_NODE_SIZE = 100;
 }  // namespace NN

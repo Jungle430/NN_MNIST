@@ -43,6 +43,21 @@ class DataMatrix {
     data.resize(size);
   }
 
+  auto setData(const std::string &data_value) -> void {
+    std::vector<dtype> new_data;
+    std::stringstream ss(data_value);
+    std::string token;
+    while (std::getline(ss, token, ',')) {
+      auto pixelValue = static_cast<dtype>(std::stod(token));
+      pixelValue /= IMAGE_VALUE_MAX;
+      new_data.emplace_back(pixelValue);
+    }
+    if (new_data.size() != data.size()) {
+      throw std::logic_error("new data size != old data size");
+    }
+    data = new_data;
+  }
+
   auto operator[](std::size_t i) -> dtype & { return data[i]; }
 
   [[nodiscard]] auto size() const noexcept -> std::size_t {

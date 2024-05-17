@@ -13,9 +13,14 @@ class BaseActivationFunction {
   /**
    * @throw if it's not override, it will throw `std::logic_error`
    */
-  virtual auto apply(dtype /*unused*/, bool /*unused*/) const noexcept(false)
-      -> dtype {
+  [[nodiscard]] virtual auto apply(dtype /*unused*/, bool /*unused*/) const
+      noexcept(false) -> dtype {
     throw std::logic_error("is the virtual function");
   };
+
+  [[nodiscard]] virtual auto differentialByCurrentValue(
+      dtype /*current_value*/) const noexcept(false) -> dtype {
+    throw std::logic_error("is the virtual function");
+  }
 };
 }  // namespace NN::ActivationFunction

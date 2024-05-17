@@ -13,8 +13,13 @@ class Sigmoid : public BaseActivationFunction<dtype> {
 
   [[nodiscard]] auto apply(dtype x, bool differential) const noexcept
       -> dtype override {
-    return differential ? 1 / (1 + std::exp(-x))
-                        : std::exp(-x) / std::pow((1 + std::exp(-x)), 2);
+    return differential ? std::exp(-x) / std::pow((1 + std::exp(-x)), 2)
+                        : 1 / (1 + std::exp(-x));
   };
+
+  [[nodiscard]] auto differentialByCurrentValue(
+      dtype current_value) const noexcept -> dtype override {
+    return current_value * (1.0 - current_value);
+  }
 };
 }  // namespace NN::ActivationFunction
