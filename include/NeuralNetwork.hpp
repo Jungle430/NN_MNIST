@@ -9,6 +9,7 @@
 
 #include "DataMatrix.hpp"
 #include "NeuralNetworkLayer.hpp"
+#include "spdlog/fmt/bundled/core.h"
 
 template <typename dtype = double, std::size_t N = 2>
 class NeuralNetwork {
@@ -64,5 +65,22 @@ class NeuralNetwork {
 
   [[nodiscard]] constexpr inline auto size() const noexcept -> std::size_t {
     return N;
+  }
+
+  [[nodiscard]] auto toString() const noexcept -> std::string {
+    std::string ans("The NeuralNetwork:\n");
+
+    ans += fmt::format("\tThe input layer size {}\n", data_matrix.size());
+
+    ans += "\tThe hidden layer: \n";
+    for (std::size_t i = 0; i < N - 1; i++) {
+      ans += fmt::format("\t\tThe hidden {}, size: {}\n", i + 1,
+                         neural_network_layers[i].size());
+    }
+
+    ans += fmt::format("\tThe output layer size: {}",
+                       neural_network_layers[N - 1].size());
+
+    return ans;
   }
 };
