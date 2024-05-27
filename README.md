@@ -62,6 +62,16 @@ make
 
 ![Training effect](./static/training_effect.png)
 
+# Picture
+
+- Remove irrelevant information from the log (like nohup), modify the log file path in `picture.py`, Then run the picture script
+
+```shell
+cd script
+python3 picture.py
+```
+
+![picture](./static/picture.png)
 
 # Thanks
 

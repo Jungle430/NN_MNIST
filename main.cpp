@@ -9,7 +9,7 @@ auto main() -> int {
   NeuralNetwork<long double, 4> neural_network(
       MNIST::IMAGE_DOMAIN, {{NN::DEFAULT_NODE_SIZE, "Sigmoid"},
                             {NN::DEFAULT_NODE_SIZE, "Sigmoid"},
-                            {NN::DEFAULT_NODE_SIZE, "Sigmoid"},
+                            {NN::DEFAULT_NODE_SIZE, "ReLU"},
                             {MNIST::NUMBER_SIZE, "Sigmoid"}});
 
   spdlog::info("The neural network scale:\n" + neural_network.toString());
