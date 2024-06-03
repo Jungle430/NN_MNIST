@@ -14,6 +14,12 @@ git submodule init
 git submodule update
 ```
 
+# Design idea
+
+![Thinking](./static/thinking.png)
+
+![NN_Layer](./static/NN_Layer.png)
+
 - prepare the data
 
 ```shell
