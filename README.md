@@ -1,6 +1,6 @@
 # NN (Neural Network) MNIST
 
-![C++](https://img.shields.io/badge/NN-C++-informational?style=flat-square&logo=cplusplus&logoColor=white&color=2bbc8a)
+![C++](https://img.shields.io/badge/C++-informational?style=for-the-badge&logo=cplusplus&logoColor=white&color=00599C) ![CMake](https://img.shields.io/badge/CMake-informational?style=for-the-badge&logo=cmake&logoColor=white&color=064F8C) ![Linux](https://img.shields.io/badge/Linux-informational?style=for-the-badge&logo=Linux&logoColor=white&color=FCC624)
 
 - This project implements a NN(Neural Network) to classify handwritten digits from the MNIST dataset.
 
