@@ -1,6 +1,3 @@
-#include <cmath>
-
-#include "include/AsyncFileReader.h"
 #include "include/MNIST.hpp"
 #include "include/NeuralNetwork.hpp"
 #include "spdlog/spdlog.h"
