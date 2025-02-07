@@ -3,10 +3,11 @@
 #include "spdlog/spdlog.h"
 
 auto main() -> int {
-  NeuralNetwork<long double, 4> neural_network(
+  NeuralNetwork<long double, 5> neural_network(
       MNIST::IMAGE_DOMAIN, {{NN::DEFAULT_NODE_SIZE, "Sigmoid"},
-                            {NN::DEFAULT_NODE_SIZE, "Sigmoid"},
-                            {NN::DEFAULT_NODE_SIZE, "Sigmoid"},
+                            {NN::DEFAULT_NODE_SIZE >> 1, "Sigmoid"},
+                            {NN::DEFAULT_NODE_SIZE >> 2, "Sigmoid"},
+                            {NN::DEFAULT_NODE_SIZE >> 3, "Sigmoid"},
                             {MNIST::NUMBER_SIZE, "Sigmoid"}});
 
   spdlog::info("The neural network scale:\n" + neural_network.toString());

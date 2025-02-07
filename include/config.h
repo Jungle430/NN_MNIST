@@ -35,5 +35,5 @@ constexpr double RANDOM_PARAM_MIN = -1.0;
 
 constexpr double RANDOM_PARAM_MAX = 1.0;
 
-constexpr std::size_t DEFAULT_NODE_SIZE = 100;
+constexpr std::size_t DEFAULT_NODE_SIZE = 256;
 }  // namespace NN
